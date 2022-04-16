@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import studies.research.project.monolithjava.model.Graph;
+import studies.research.project.monolithjava.service.EdmondsKarpService;
 import studies.research.project.monolithjava.service.GraphService;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -16,9 +17,11 @@ import static org.springframework.http.HttpStatus.OK;
 public class GraphController {
 
     private final GraphService graphService;
+    private final EdmondsKarpService edmondsKarpService;
 
-    public GraphController(GraphService graphService) {
+    public GraphController(GraphService graphService, EdmondsKarpService edmondsKarpService) {
         this.graphService = graphService;
+        this.edmondsKarpService = edmondsKarpService;
     }
 
     @GetMapping("/graphs/{id}")
@@ -27,5 +30,10 @@ public class GraphController {
                 .map(graphService::getGraph)
                 .map(graph -> new ResponseEntity<>(graph, OK))
                 .getOrElseGet(e -> new ResponseEntity<>(NOT_FOUND));
+    }
+
+    @GetMapping("/graphs/maxFlow/{id}")
+    public ResponseEntity<Integer> getMaxGraphFlow(@PathVariable("id") String id) {
+        return null;
     }
 }
