@@ -18,7 +18,7 @@ public class GraphRepository {
                 {1, 0, 3, 4},
                 {1, 2, 0, 4},
                 {1, 2, 3, 0}};
-        Graph graph = new Graph(0,adjMatrix);
+        Graph graph = new Graph(0, 4, adjMatrix);
         graphs.add(graph);
     }
 

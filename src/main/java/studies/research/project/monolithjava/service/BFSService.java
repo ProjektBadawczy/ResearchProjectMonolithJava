@@ -9,8 +9,9 @@ import java.util.LinkedList;
 @Service
 public class BFSService {
 
-    public BFSResult bfs(Graph graph, int source, int t, int numberOfVertices) {
+    public BFSResult bfs(Graph graph, int source, int t) {
 
+        int numberOfVertices = graph.numberOfVertices();
         int[] parent = new int[numberOfVertices];
         boolean[] visited = new boolean[numberOfVertices];
         for(int i=0; i<numberOfVertices; ++i)
