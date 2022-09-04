@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import studies.research.project.monolithjava.model.Graph;
 import studies.research.project.monolithjava.service.EdmondsKarpService;
 import studies.research.project.monolithjava.service.GraphService;
+import studies.research.project.monolithjava.service.PushRelabelService;
 
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -20,10 +21,12 @@ public class GraphController {
 
     private final GraphService graphService;
     private final EdmondsKarpService edmondsKarpService;
+    private final PushRelabelService pushRelabelService;
 
-    public GraphController(GraphService graphService, EdmondsKarpService edmondsKarpService) {
+    public GraphController(GraphService graphService, EdmondsKarpService edmondsKarpService, PushRelabelService pushRelabelService) {
         this.graphService = graphService;
         this.edmondsKarpService = edmondsKarpService;
+        this.pushRelabelService = pushRelabelService;
     }
 
     @GetMapping("/graphs/{id}")
@@ -35,14 +38,27 @@ public class GraphController {
                 .getOrElseGet(e -> new ResponseEntity<>(NOT_FOUND));
     }
 
-    @GetMapping("/graphs/maxFlow/{id}")
-    public ResponseEntity<Integer> getMaxGraphFlow(@PathVariable("id") String id, @RequestParam String source, @RequestParam String destination) {
+    @GetMapping("/graphs/edmondsKarpMaxFlow/{id}")
+    public ResponseEntity<Integer> getEdmondsKarpMaxGraphFlow(@PathVariable("id") String id, @RequestParam String source, @RequestParam String destination) {
         return Try.of(() -> Integer.parseInt(id))
                 .map(graphService::getGraph)
                 .map(graph -> {
                     int s = Integer.parseInt(source);
                     int d = Integer.parseInt(destination);
                     return new ResponseEntity<>(edmondsKarpService.calculateMaxFlow(graph, s, d), OK);
+                })
+                .onFailure(System.err::println)
+                .getOrElseGet(e -> new ResponseEntity<>(BAD_REQUEST));
+    }
+
+    @GetMapping("/graphs/pushRelabelMaxFlow/{id}")
+    public ResponseEntity<Integer> getPushRelabelMaxGraphFlow(@PathVariable("id") String id, @RequestParam String source, @RequestParam String destination) {
+        return Try.of(() -> Integer.parseInt(id))
+                .map(graphService::getDirectedGraph)
+                .map(graph -> {
+                    int s = Integer.parseInt(source);
+                    int d = Integer.parseInt(destination);
+                    return new ResponseEntity<>(pushRelabelService.calculateMaxFlow(graph, s, d), OK);
                 })
                 .onFailure(System.err::println)
                 .getOrElseGet(e -> new ResponseEntity<>(BAD_REQUEST));
