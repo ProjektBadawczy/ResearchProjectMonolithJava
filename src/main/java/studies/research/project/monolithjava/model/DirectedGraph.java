@@ -1,6 +1,8 @@
 package studies.research.project.monolithjava.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -8,21 +10,23 @@ import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class DirectedGraph {
 
     private List<List<Vertex>> adjacencyList;
-    private int vertices;
+    private int numberOfVertices;
     private int id;
 
     public DirectedGraph(int verticesNumber, int identificator)
     {
         id = identificator;
 
-        vertices = verticesNumber;
+        numberOfVertices = verticesNumber;
 
-        adjacencyList = new ArrayList<>(vertices);
+        adjacencyList = new ArrayList<>(numberOfVertices);
 
-        for (int i = 0; i < vertices; i++)
+        for (int i = 0; i < numberOfVertices; i++)
         {
             adjacencyList.add(new ArrayList<>());
         }
@@ -35,7 +39,7 @@ public class DirectedGraph {
 
     public boolean hasEdge(int u, int v)
     {
-        if (u >= vertices)
+        if (u >= numberOfVertices)
             return false;
 
         return adjacencyList.get(u)
