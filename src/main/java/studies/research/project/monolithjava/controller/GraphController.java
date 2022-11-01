@@ -7,10 +7,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import studies.research.project.monolithjava.model.DirectedGraph;
 import studies.research.project.monolithjava.model.Graph;
 import studies.research.project.monolithjava.service.EdmondsKarpService;
 import studies.research.project.monolithjava.service.GraphService;
 import studies.research.project.monolithjava.service.PushRelabelService;
+
+import javax.websocket.server.PathParam;
 
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -29,8 +32,8 @@ public class GraphController {
         this.pushRelabelService = pushRelabelService;
     }
 
-    @GetMapping("/graphs/{id}")
-    public ResponseEntity<Graph> getGraph(@PathVariable("id") String id) {
+    @GetMapping("/graph")
+    public ResponseEntity<Graph> getGraph(@RequestParam("id") String id) {
         return Try.of(() -> Integer.parseInt(id))
                 .map(graphService::getGraph)
                 .map(graph -> new ResponseEntity<>(graph, OK))
@@ -38,8 +41,17 @@ public class GraphController {
                 .getOrElseGet(e -> new ResponseEntity<>(NOT_FOUND));
     }
 
-    @GetMapping("/graphs/edmondsKarpMaxFlow/{id}")
-    public ResponseEntity<Integer> getEdmondsKarpMaxGraphFlow(@PathVariable("id") String id, @RequestParam String source, @RequestParam String destination) {
+    @GetMapping("/directedGraph")
+    public ResponseEntity<DirectedGraph> getDirectedGraph(@RequestParam("id") String id) {
+        return Try.of(() -> Integer.parseInt(id))
+                .map(graphService::getDirectedGraph)
+                .map(graph -> new ResponseEntity<>(graph, OK))
+                .onFailure(System.err::println)
+                .getOrElseGet(e -> new ResponseEntity<>(NOT_FOUND));
+    }
+
+    @GetMapping("/edmondsKarpMaxGraphFlow")
+    public ResponseEntity<Integer> getEdmondsKarpMaxGraphFlow(@RequestParam("id") String id, @RequestParam String source, @RequestParam String destination) {
         return Try.of(() -> Integer.parseInt(id))
                 .map(graphService::getGraph)
                 .map(graph -> {
@@ -51,8 +63,8 @@ public class GraphController {
                 .getOrElseGet(e -> new ResponseEntity<>(BAD_REQUEST));
     }
 
-    @GetMapping("/graphs/pushRelabelMaxFlow/{id}")
-    public ResponseEntity<Integer> getPushRelabelMaxGraphFlow(@PathVariable("id") String id, @RequestParam String source, @RequestParam String destination) {
+    @GetMapping("/pushRelabelMaxGraphFlow")
+    public ResponseEntity<Integer> getPushRelabelMaxGraphFlow(@RequestParam("id") String id, @RequestParam String source, @RequestParam String destination) {
         return Try.of(() -> Integer.parseInt(id))
                 .map(graphService::getDirectedGraph)
                 .map(graph -> {
