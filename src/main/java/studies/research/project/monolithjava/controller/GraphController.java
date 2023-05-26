@@ -34,7 +34,6 @@ public class GraphController {
 
     @GetMapping("/graph")
     public ResponseEntity<Graph> getGraph(@RequestParam("id") String id) {
-        return new ResponseEntity<>(NOT_FOUND);
         return Try.of(() -> Integer.parseInt(id))
                 .map(graphService::getGraph)
                 .map(graph -> new ResponseEntity<>(graph, OK))
