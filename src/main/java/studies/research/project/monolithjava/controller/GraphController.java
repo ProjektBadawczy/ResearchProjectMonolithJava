@@ -34,16 +34,12 @@ public class GraphController {
 
     @GetMapping("/graph")
     public ResponseEntity<Graph> getGraph(@RequestParam("id") String id) {
-        Graph graph = graphService.getGraph(Integer.parseInt(id));
-        if(graph != null){
-            new ResponseEntity<>(graph, OK);
-        }
         return new ResponseEntity<>(NOT_FOUND);
-//        return Try.of(() -> Integer.parseInt(id))
-//                .map(graphService::getGraph)
-//                .map(graph -> new ResponseEntity<>(graph, OK))
-//                .onFailure(System.err::println)
-//                .getOrElseGet(e -> new ResponseEntity<>(NOT_FOUND));
+        return Try.of(() -> Integer.parseInt(id))
+                .map(graphService::getGraph)
+                .map(graph -> new ResponseEntity<>(graph, OK))
+                .onFailure(System.err::println)
+                .getOrElseGet(e -> new ResponseEntity<>(NOT_FOUND));
     }
 
     @GetMapping("/directedGraph")
@@ -57,21 +53,15 @@ public class GraphController {
 
     @GetMapping("/edmondsKarpMaxGraphFlow")
     public ResponseEntity<Integer> getEdmondsKarpMaxGraphFlow(@RequestParam("id") String id, @RequestParam String source, @RequestParam String destination) {
-        Graph graph = graphService.getGraph(Integer.parseInt(id));
-        if(graph == null){
-            return new ResponseEntity<>(NOT_FOUND);
-        }
-        int maxFlow = edmondsKarpService.calculateMaxFlow(graph, Integer.parseInt(source), Integer.parseInt(destination));
-        return new ResponseEntity<>(maxFlow, OK);
-//        return Try.of(() -> Integer.parseInt(id))
-//                .map(graphService::getGraph)
-//                .map(graph -> {
-//                    int s = Integer.parseInt(source);
-//                    int d = Integer.parseInt(destination);
-//                    return new ResponseEntity<>(edmondsKarpService.calculateMaxFlow(graph, s, d), OK);
-//                })
-//                .onFailure(System.err::println)
-//                .getOrElseGet(e -> new ResponseEntity<>(BAD_REQUEST));
+        return Try.of(() -> Integer.parseInt(id))
+                .map(graphService::getGraph)
+                .map(graph -> {
+                    int s = Integer.parseInt(source);
+                    int d = Integer.parseInt(destination);
+                    return new ResponseEntity<>(edmondsKarpService.calculateMaxFlow(graph, s, d), OK);
+                })
+                .onFailure(System.err::println)
+                .getOrElseGet(e -> new ResponseEntity<>(BAD_REQUEST));
     }
 
     @GetMapping("/pushRelabelMaxGraphFlow")
